@@ -76,11 +76,11 @@ Contributions are welcome ! If you have ideas for improvements, feel free to ope
 
 Fork the project.
 
-Create a new branch (git checkout -b feature/new-feature).
+Create a new branch `(git checkout -b feature/new-feature)`.
 
-Commit your changes (git commit -m 'Add...').
+Commit your changes `(git commit -m 'Add...')`.
 
-Push to your branch (git push origin feature/new-feature).
+Push to your branch `(git push origin feature/new-feature)`.
 
 Open a Pull Request.
 
