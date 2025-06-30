@@ -1,0 +1,49 @@
+{
+  "name": "minipote",
+  "displayName": "Mini Pote - Coding Pet",
+  "description": "Un compagnon de code virtuel qui évolue avec toi !",
+  "version": "1.0.0",
+  "publisher": "Ely404 ", // <-- ADD YOUR PUBLISHER NAME
+  "icon": "media/logo.png", // <-- ADD (Optional but recommended)
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-github-username/minipote.git" // <-- ADD YOUR REPO URL
+  },
+  "bugs": {
+    "url": "https://github.com/your-github-username/minipote/issues" // <-- ADD LINK TO ISSUES
+  },
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onView:minipote.petView"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "minipote-container",
+          "title": "Mini Pote",
+          "icon": "media/Pote.svg"
+        }
+      ]
+    },
+    "views": {
+      "minipote-container": [
+        {
+          "type": "webview",
+          "id": "minipote.petView",
+          "name": "Mini Pote"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "echo 'No compilation needed'"
+  }
+}

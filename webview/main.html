@@ -1,0 +1,60 @@
+<!-- webview/main.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{styleUri}}">
+    <title>Mini Pote</title>
+</head>
+<body>
+    <div class="container">
+        <div class="pet-display">
+            <div id="petEmoji" class="pet-emoji">🥚</div>
+            <div id="petName" class="pet-name">Mini Pote</div>
+            <div id="petMessage" class="pet-message">Salut ! Je suis ton nouveau compagnon de code ! 🎉</div>
+            <div class="stats">
+                <div class="stat-card">
+                    <div>Niveau Global</div>
+                    <div id="globalLevel" class="stat-value">1</div>
+                </div>
+                <div class="stat-card">
+                    <div>Cette Semaine</div>
+                    <div id="weeklyTime" class="stat-value">0min</div>
+                </div>
+                <div class="stat-card">
+                    <div>Total</div>
+                    <div id="totalTime" class="stat-value">0min</div>
+                </div>
+            </div>
+            <div class="weekly-reset-info">⏰ Reset chaque lundi. Le niveau global est conservé !</div>
+            <div class="exp-container">
+                <div class="exp-bar">
+                    <div id="expFill" class="exp-fill" style="width: 0%;"></div>
+                </div>
+                <span id="expPercentage" class="exp-percentage">0%</span>
+            </div>
+            <div id="status" class="status inactive">💤 En attente...</div>
+        </div>
+
+        <div class="evolution-info">
+            <h3>🎯 Ton chemin évolutif :</h3>
+            <div id="pathName" style="font-weight: bold; margin-bottom: 10px;">🎲 Chemin : <span id="currentPath"></span></div>
+            <div id="nextEvolutionInfo" style="margin-top: 10px; font-weight: 500;"></div>
+            <div style="font-size: 12px; opacity: 0.8;">Triple-clic pour en découvrir un nouveau !</div>
+        </div>
+
+        <div class="achievements-section">
+            <h3>🏆 Tes Succès</h3>
+            <div id="achievementsSummary" class="achievements-summary" style="display: none;">
+                <span id="summaryText"></span>
+                <button id="showAllBtn" class="summary-button">Voir tout</button>
+            </div>
+            <div id="achievementsList" class="achievements-list"></div>
+            <h4>📋 Succès Disponibles</h4>
+            <div id="pendingAchievements" class="achievements-list"></div>
+        </div>
+    </div>
+    <script src="{{scriptUri}}"></script>
+</body>
+</html>
