@@ -21,7 +21,7 @@ Un compagnon de code virtuel pour VS Code qui évolue en fonction du temps que t
 
 Cette extension n'est pas sur le VS Code Marketplace. L'installation se fait manuellement via un fichier `.vsix`.
 
-### **1. Pour les Utilisateurs (Tes Amis)**
+### **1. Pour les Utilisateurs**
 
 Pour installer Mini Pote, suivez ces étapes :
 
@@ -42,7 +42,7 @@ Pour installer Mini Pote, suivez ces étapes :
 
 ---
 
-### **2. Pour les Développeurs (Comment créer le fichier `.vsix`)**
+### **2. Pour les Développeurs**
 
 Si vous avez modifié le code et que vous voulez créer votre propre fichier `.vsix` :
 
