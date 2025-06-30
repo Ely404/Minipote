@@ -1,32 +1,64 @@
 # Mini Pote - Ton Compagnon de Code 🐲
 
-[![Version sur le Marketplace](https://img.shields.io/visual-studio-marketplace/v/your-publisher.minipote?style=for-the-badge&label=Marketplace&color=blueviolet)](https://marketplace.visualstudio.com/items?itemName=your-publisher.minipote)
-[![Licence](https://img.shields.io/github/license/your-github-username/minipote?style=for-the-badge)](LICENSE)
+[![Licence](https://img.shields.io/github/license/Ely404/minipote?style=for-the-badge)](LICENSE)
 
 Un compagnon de code virtuel pour VS Code qui évolue en fonction du temps que tu passes à coder. Reste motivé, débloque des succès et regarde ton Mini Pote grandir avec tes compétences !
-
-![Aperçu de Mini Pote](media/minipote-demo.gif)
-*(Astuce : Vous pouvez créer une GIF comme celle-ci avec des outils comme LICEcap ou Kap)*
 
 ---
 
 ## ✨ Fonctionnalités
 
--   **🐾 Compagnon Évolutif :** Ton Pote évolue à travers différents stades en fonction de ton temps de codage hebdomadaire.
--   **📈 Niveaux et XP :** Gagne de l'expérience et monte de niveau en fonction de ton temps de codage total. Ton niveau est permanent !
--   **🏆 Système de Succès :** Débloque des dizaines de succès pour tes accomplissements, qu'il s'agisse de coder la nuit ou de maintenir une régularité sur plusieurs semaines.
--   **🎲 Chemins d'Évolution Multiples :** Découvre plusieurs chemins d'évolution (Dragon, Licorne, Robot...) pour renouveler l'expérience chaque semaine.
--   **📊 Statistiques Détaillées :** Suis ton temps de codage total et hebdomadaire directement dans la vue de l'extension.
--   **🇫🇷 Entièrement en Français.**
+- **🐾 Compagnon Évolutif :** Ton Pote évolue à travers différents stades en fonction de ton temps de codage hebdomadaire.
+- **📈 Niveaux et XP :** Gagne de l'expérience et monte de niveau en fonction de ton temps de codage total. Ton niveau est permanent !
+- **🏆 Système de Succès :** Débloque des dizaines de succès pour tes accomplissements, qu'il s'agisse de coder la nuit ou de maintenir une régularité sur plusieurs semaines.
+- **🎲 Chemins d'Évolution Multiples :** Découvre plusieurs chemins d'évolution (Dragon, Licorne, Robot...) pour renouveler l'expérience chaque semaine.
+- **📊 Statistiques Détaillées :** Suis ton temps de codage total et hebdomadaire directement dans la vue de l'extension.
+- **🇫🇷 Entièrement en Français.**
 
 ---
 
 ## 🚀 Installation et Utilisation
 
-1.  Installe l'extension depuis le [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=your-publisher.minipote).
-2.  Ouvre la barre d'activités de VS Code (le menu sur la gauche).
-3.  Clique sur l'icône de Mini Pote (🐲).
-4.  Commence à coder ! Ton compagnon détectera automatiquement ton activité.
+Cette extension n'est pas sur le VS Code Marketplace. L'installation se fait manuellement via un fichier `.vsix`.
+
+### **1. Pour les Utilisateurs (Tes Amis)**
+
+Pour installer Mini Pote, suivez ces étapes :
+
+1.  **📦 Télécharger le fichier :**
+
+    - Téléchargez le fichier le plus récent qui se termine par `.vsix` (par exemple `minipote-1.0.0.vsix`).
+
+2.  **💻 Installer dans VS Code :**
+
+    - Ouvrez Visual Studio Code.
+    - Allez dans l'onglet **Extensions** dans la barre de gauche (l'icône des carrés).
+    - Cliquez sur les trois points (`...`) en haut à droite de la vue Extensions.
+    - Sélectionnez **"Install from VSIX..."**.
+    - Choisissez le fichier `.vsix` que vous venez de télécharger.
+
+3.  **🎉 Profiter :**
+    - L'extension sera installée et prête à l'emploi ! Cliquez sur la nouvelle icône Mini Pote dans votre barre d'activité.
+
+---
+
+### **2. Pour les Développeurs (Comment créer le fichier `.vsix`)**
+
+Si vous avez modifié le code et que vous voulez créer votre propre fichier `.vsix` :
+
+1.  **Prérequis :** Assurez-vous d'avoir Node.js installé. Ensuite, installez l'outil de packaging de VS Code (`vsce`) globalement sur votre machine :
+
+    ```bash
+    npm install -g vsce
+    ```
+
+2.  **Créer le paquet :** Ouvrez un terminal à la racine du projet et lancez la commande suivante :
+
+    ```bash
+    vsce package
+    ```
+
+3.  **Résultat :** Cette commande va créer un fichier `minipote-x.y.z.vsix` dans le dossier du projet (où `x.y.z` est la version définie dans `package.json`). C'est ce fichier que vous pouvez partager avec vos amis !
 
 ---
 
@@ -34,26 +66,17 @@ Un compagnon de code virtuel pour VS Code qui évolue en fonction du temps que t
 
 ### L'Évolution (Hebdomadaire)
 
-L'apparence de ton Mini Pote est basée sur le temps que tu as codé **cette semaine**. Il existe 6 stades d'évolution, du stade 0 (Œuf) au stade 5 (Forme Cosmique), débloqués à certains paliers de temps.
-
--   **Le reset a lieu chaque lundi matin.**
--   À chaque reset, ton temps hebdomadaire est remis à zéro, et ton Pote retourne à son état d'œuf, prêt pour une nouvelle semaine de codage !
+L'apparence de ton Mini Pote est basée sur le temps que tu as passé à coder **cette semaine**. Il existe 6 stades d'évolution, du stade 0 (Œuf) au stade 5 (Forme Cosmique). Le reset a lieu chaque lundi matin.
 
 ### Le Niveau Global (Permanent)
 
-Ton niveau global est le reflet de ton investissement sur le long terme.
--   **1 heure de codage = 1 niveau.**
--   Ce niveau n'est **jamais** réinitialisé. Il représente ton expérience totale en tant que développeur avec Mini Pote à tes côtés.
-
-### Les Succès
-
-Les succès sont des trophées que tu gagnes en atteignant des objectifs spécifiques. Certains sont basés sur le temps total, d'autres sur des actions spécifiques (coder le week-end, atteindre une certaine régularité, etc.).
+Ton niveau global reflète ton investissement sur le long terme (**1 heure de codage = 1 niveau**). Ce niveau n'est **jamais** réinitialisé.
 
 ---
 
 ## 🤝 Contribuer
 
-Les contributions sont les bienvenues ! Si tu as des idées d'améliorations, de nouveaux succès ou de nouveaux chemins d'évolution, n'hésite pas :
+Les contributions sont les bienvenues ! Si tu as des idées d'améliorations, n'hésite pas à ouvrir une **Pull Request**.
 
 1.  **Fork** le projet.
 2.  Crée une nouvelle branche (`git checkout -b feature/nouvelle-fonctionnalite`).

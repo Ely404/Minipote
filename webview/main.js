@@ -3,7 +3,9 @@
     const vscode = acquireVsCodeApi();
 
     // --- STATE ---
-    let codingTime = 0, weeklyTime = 0, globalLevel = 1, isActive = false, unlockedAchievements = [];
+    let codingTime = 0, globalLevel = 1, isActive = false, unlockedAchievements = [];
+    let pathTimes = {};
+    let lastKnownWeeklyTime = 0;
 
     // --- CONSTANTS ---
     const animalPaths = [
@@ -99,7 +101,7 @@
         { id: "early_bird", name: "Lève-tôt", description: "Coder entre 6h et 8h du matin", emoji: "🐦" },
         { id: "night_owl", name: "Oiseau de Nuit", description: "Coder entre 22h et 6h du matin", emoji: "🦉" },
         { id: "weekend_warrior", name: "Guerrier du Weekend", description: "Coder un Samedi ou un Dimanche", emoji: "🛡️" },
-        { id: "versatile_coder", name: "Codeur Polyvalent", description: 'Débloquer "Lève-tôt" et "Oiseau de Nuit"', emoji: "🌗" }
+        { id: "versatile_coder", name: "Codeur Polyvalent", description: 'Débloquer "Lève-tôt" et "Oiseau de Nuit"', emoji: "🌗" } 
     ];
 
     const messages = [
@@ -122,31 +124,23 @@
 
     // --- DOM ELEMENTS ---
     const dom = {
-        petEmoji: document.getElementById('petEmoji'),
-        petName: document.getElementById('petName'),
-        petMessage: document.getElementById('petMessage'),
-        globalLevel: document.getElementById('globalLevel'),
-        weeklyTime: document.getElementById('weeklyTime'),
-        totalTime: document.getElementById('totalTime'),
-        expFill: document.getElementById('expFill'),
-        expPercentage: document.getElementById('expPercentage'),
-        currentPath: document.getElementById('currentPath'),
-        nextEvolutionInfo: document.getElementById('nextEvolutionInfo'),
-        status: document.getElementById('status'),
-        achievements: {
-            summary: document.getElementById('achievementsSummary'),
-            summaryText: document.getElementById('summaryText'),
-            list: document.getElementById('achievementsList'),
-            pendingList: document.getElementById('pendingAchievements'),
-            showAllBtn: document.getElementById('showAllBtn')
-        }
+        petEmoji: document.getElementById('petEmoji'), petName: document.getElementById('petName'), petMessage: document.getElementById('petMessage'),
+        globalLevel: document.getElementById('globalLevel'), weeklyTime: document.getElementById('weeklyTime'), totalTime: document.getElementById('totalTime'),
+        expFill: document.getElementById('expFill'), expPercentage: document.getElementById('expPercentage'), currentPath: document.getElementById('currentPath'),
+        nextEvolutionInfo: document.getElementById('nextEvolutionInfo'), status: document.getElementById('status'),
+        achievements: { summary: document.getElementById('achievementsSummary'), summaryText: document.getElementById('summaryText'), list: document.getElementById('achievementsList'), pendingList: document.getElementById('pendingAchievements'), showAllBtn: document.getElementById('showAllBtn') }
     };
 
-    // --- EVOLUTION PATH LOGIC ---
+    // --- INITIALIZATION ---
     let selectedPath = parseInt(localStorage.getItem('minipote-path') || Math.floor(Math.random() * animalPaths.length));
     if (selectedPath >= animalPaths.length) selectedPath = 0;
+    
+    pathTimes = JSON.parse(localStorage.getItem('minipote-path-times')) || {};
+    lastKnownWeeklyTime = JSON.parse(localStorage.getItem('minipote-last-weekly-time')) || 0;
+
     let currentAnimalPath = animalPaths[selectedPath];
 
+    // --- UI UPDATE FUNCTIONS ---
     function updateDisplay() {
         updatePetEvolution();
         updateStats();
@@ -155,23 +149,23 @@
     }
 
     function updatePetEvolution() {
+        const timeForThisPath = pathTimes[selectedPath] || 0;
         let currentAnimal = currentAnimalPath[0];
         for (const animal of currentAnimalPath) {
-            if (weeklyTime >= animal.minTime) {
+            if (timeForThisPath >= animal.minTime) {
                 currentAnimal = animal;
             }
         }
         dom.petEmoji.textContent = currentAnimal.emoji;
         dom.petName.textContent = currentAnimal.name;
-
+        
         const pathNames = ['Dragon 🐲', 'Licorne 🦄', 'Robot 🤖', 'Océan 🌊', 'Espace 🛸', 'Mystique 🧚', 'Jungle 🌳', 'Glace ❄️'];
         dom.currentPath.textContent = pathNames[selectedPath] || 'Mystère 🎭';
 
-        // Next evolution info
         const currentIndex = currentAnimalPath.findIndex(a => a.name === currentAnimal.name);
         if (currentIndex < currentAnimalPath.length - 1) {
             const nextAnimal = currentAnimalPath[currentIndex + 1];
-            const timeToNext = Math.ceil(nextAnimal.minTime - weeklyTime);
+            const timeToNext = Math.ceil(nextAnimal.minTime - timeForThisPath);
             if (timeToNext > 0) {
                 dom.nextEvolutionInfo.textContent = `Nouvelle évolution (${nextAnimal.name}) dans : ${timeToNext} min`;
                 dom.nextEvolutionInfo.style.display = 'block';
@@ -179,14 +173,14 @@
                 dom.nextEvolutionInfo.style.display = 'none';
             }
         } else {
-            dom.nextEvolutionInfo.textContent = '✨ Évolution maximale atteinte pour cette semaine !';
+            dom.nextEvolutionInfo.textContent = '✨ Évolution maximale atteinte pour ce chemin !';
             dom.nextEvolutionInfo.style.display = 'block';
         }
     }
 
     function updateStats() {
         dom.globalLevel.textContent = globalLevel;
-        dom.weeklyTime.textContent = formatTime(weeklyTime);
+        dom.weeklyTime.textContent = formatTime(lastKnownWeeklyTime);
         dom.totalTime.textContent = formatTime(codingTime);
 
         const expPercentage = (codingTime % 60) * (100 / 60);
@@ -209,26 +203,17 @@
     function updateAchievements() {
         const unlockedCount = unlockedAchievements.length;
         const { summary, list, pendingList, summaryText } = dom.achievements;
-
         list.innerHTML = '';
         pendingList.innerHTML = '';
-
-        // Render unlocked achievements
         if (unlockedCount === 0) {
             summary.style.display = 'none';
             list.innerHTML = `<div style="opacity: 0.6; text-align: center; padding: 20px;">Commence à coder pour débloquer des trophées !</div>`;
         } else {
-            // Sort to maintain a consistent order
-            unlockedAchievements
-                .slice()
-                .sort((a, b) => achievementsList.findIndex(ac => ac.id === a) - achievementsList.findIndex(ac => ac.id === b))
-                .forEach(id => {
-                    const ach = achievementsList.find(a => a.id === id);
-                    if (ach) list.appendChild(createAchievementElement(ach, false));
-                });
+            unlockedAchievements.slice().sort((a, b) => achievementsList.findIndex(ac => ac.id === a) - achievementsList.findIndex(ac => ac.id === b)).forEach(id => {
+                const ach = achievementsList.find(a => a.id === id);
+                if (ach) list.appendChild(createAchievementElement(ach, false));
+            });
         }
-
-        // Toggle summary view if many achievements are unlocked
         if (unlockedCount > 4) {
             summary.style.display = 'flex';
             summaryText.textContent = `🏆 Tu as débloqué ${unlockedCount} succès !`;
@@ -237,8 +222,6 @@
             summary.style.display = 'none';
             list.style.display = 'block';
         }
-
-        // Render pending achievements
         achievementsList.forEach(ach => {
             if (!unlockedAchievements.includes(ach.id)) {
                 pendingList.appendChild(createAchievementElement(ach, true));
@@ -249,12 +232,7 @@
     function createAchievementElement(ach, isPending) {
         const el = document.createElement('div');
         el.className = isPending ? 'pending-achievement' : 'achievement';
-        el.innerHTML = `
-            <div class="achievement-emoji" style="${isPending ? 'opacity: 0.5;' : ''}">${ach.emoji}</div>
-            <div class="achievement-info">
-                <div class="achievement-name">${ach.name}</div>
-                <div class="achievement-desc">${ach.description}</div>
-            </div>`;
+        el.innerHTML = `<div class="achievement-emoji" style="${isPending ? 'opacity: 0.5;' : ''}">${ach.emoji}</div><div class="achievement-info"><div class="achievement-name">${ach.name}</div><div class="achievement-desc">${ach.description}</div></div>`;
         return el;
     }
 
@@ -270,7 +248,30 @@
     window.addEventListener('message', event => {
         const message = event.data;
         if (message.command === 'updateTime') {
-            ({ time: codingTime, weeklyTime, globalLevel, isActive, achievements: unlockedAchievements } = message);
+            ({ time: codingTime, globalLevel, isActive, achievements: unlockedAchievements } = message);
+            const newTotalWeeklyTime = message.weeklyTime;
+
+            // Check for weekly reset first
+            if (newTotalWeeklyTime < lastKnownWeeklyTime) {
+                pathTimes = {};
+                lastKnownWeeklyTime = 0;
+            }
+
+            // Calculate time gained since the last update
+            const timeGained = newTotalWeeklyTime - lastKnownWeeklyTime;
+
+            // Add the gained time to the currently active path
+            if (timeGained > 0) {
+                pathTimes[selectedPath] = (pathTimes[selectedPath] || 0) + timeGained;
+            }
+
+            // Update the 'last known' total to the new total
+            lastKnownWeeklyTime = newTotalWeeklyTime;
+
+            // Save the state to localStorage
+            localStorage.setItem('minipote-path-times', JSON.stringify(pathTimes));
+            localStorage.setItem('minipote-last-weekly-time', JSON.stringify(lastKnownWeeklyTime));
+
             updateDisplay();
         }
     });
@@ -280,41 +281,31 @@
         dom.achievements.list.style.display = 'block';
     });
 
-    // Triple-click to change path
-    let clickCount = 0;
-    document.body.addEventListener('click', (e) => {
-        if (e.target.closest('.achievements-list, .summary-button, a, button')) return;
-
-        clickCount++;
+    let petClickCount = 0;
+    dom.petEmoji.addEventListener('click', () => {
+        petClickCount++;
         setTimeout(() => {
-            if (clickCount === 3) {
+            if (petClickCount === 3) {
                 let newPath;
-                do {
-                    newPath = Math.floor(Math.random() * animalPaths.length);
-                } while (newPath === selectedPath);
-
+                do { newPath = Math.floor(Math.random() * animalPaths.length); } while (newPath === selectedPath);
+                
                 selectedPath = newPath;
                 currentAnimalPath = animalPaths[selectedPath];
                 localStorage.setItem('minipote-path', selectedPath.toString());
-
-                const originalWeeklyTime = weeklyTime;
-                weeklyTime = 0; // Temporarily reset for hatching effect
-                updateDisplay();
-                weeklyTime = originalWeeklyTime; // Restore for next update
-
+                
                 dom.petMessage.textContent = "J'ai découvert un nouveau chemin évolutif !";
+                updateDisplay();
             }
-            clickCount = 0;
+            petClickCount = 0;
         }, 500);
     });
 
-    // Random message interval
+    // --- INTERVALS & INITIALIZATION ---
     setInterval(() => {
         if (isActive && Math.random() < 0.3) {
             dom.petMessage.textContent = messages[Math.floor(Math.random() * messages.length)];
         }
     }, 120000);
 
-    // Initial data request
     vscode.postMessage({ command: 'getCodingTime' });
 }());
