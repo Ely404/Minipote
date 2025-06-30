@@ -20,32 +20,32 @@ This extension is not on the VS Code Marketplace. Installation is done manually 
 
 To install Mini Pote, follow these steps :
 
-    📦 Download the file :
-        Download the latest file that ends with .vsix (e.g., minipote-1.0.0.vsix).
+📦 Download the file :
+Download the latest file that ends with .vsix (e.g., minipote-1.0.0.vsix).
 
-    💻 Install in VS Code :
-        Open Visual Studio Code.
-        Go to the Extensions tab in the left sidebar (the squares icon).
-        Click on the three dots (...) at the top right of the Extensions view.
-        Select "Install from VSIX...".
-        Choose the .vsix file you just downloaded.
+💻 Install in VS Code :
+Open Visual Studio Code.
+Go to the Extensions tab in the left sidebar (the squares icon).
+Click on the three dots (...) at the top right of the Extensions view.
+Select "Install from VSIX...".
+Choose the .vsix file you just downloaded.
 
-    🎉 Enjoy :
-        The extension will be installed and ready to use ! Click on the new Mini Pote icon in your activity bar.
+🎉 Enjoy :
+The extension will be installed and ready to use ! Click on the new Mini Pote icon in your activity bar.
 
 2. For Developers
 
 If you have modified the code and want to create your own .vsix file:
 
-    Prerequisites: Make sure you have Node.js installed. Then, install the VS Code packaging tool (vsce) globally on your machine :
+Prerequisites: Make sure you have Node.js installed. Then, install the VS Code packaging tool (vsce) globally on your machine :
 
     npm install -g vsce
 
-    Create the package: Open a terminal at the root of the project and run the following command :
+Create the package: Open a terminal at the root of the project and run the following command :
 
     vsce package
 
-    Result: This command will create a minipote-x.y.z.vsix file in the project folder (where x.y.z is the version defined in package.json). This is the file you can share with your friends !
+Result: This command will create a minipote-x.y.z.vsix file in the project folder (where x.y.z is the version defined in package.json). This is the file you can share with your friends !
 
 🧠 Key Concepts
 Evolution (Weekly)
@@ -58,11 +58,11 @@ Your global level reflects your long-term investment (1 hour of coding = 1 level
 
 Contributions are welcome ! If you have ideas for improvements, feel free to open a Pull Request.
 
-    Fork the project.
-    Create a new branch (git checkout -b feature/new-feature).
-    Commit your changes (git commit -m 'Add...').
-    Push to your branch (git push origin feature/new-feature).
-    Open a Pull Request.
+Fork the project.
+Create a new branch (git checkout -b feature/new-feature).
+Commit your changes (git commit -m 'Add...').
+Push to your branch (git push origin feature/new-feature).
+Open a Pull Request.
 
 📜 License
 
