@@ -1,93 +1,71 @@
-# Mini Pote - Ton Compagnon de Code 🐲
+Mini Pote - Your Code Companion 🐲
 
-[![Licence](https://img.shields.io/github/license/Ely404/minipote?style=for-the-badge)](LICENSE)
+![License](https://img.shields.io/github/license/Ely404/minipote?style=for-the-badge)
 
-Un compagnon de code virtuel pour VS Code qui évolue en fonction du temps que tu passes à coder. Reste motivé, débloque des succès et regarde ton Mini Pote grandir avec tes compétences !
+A virtual code companion for VS Code that evolves based on the time you spend coding. Stay motivated, unlock achievements, and watch your Mini Pote grow with your skills !
+✨ Features
 
----
+    🐾 Evolving Companion: Your Pote evolves through different stages based on your weekly coding time.
+    📈 Levels and XP: Gain experience and level up based on your total coding time. Your level is permanent !
+    🏆 Achievement System: Unlock dozens of achievements for your accomplishments, whether it's coding at night or maintaining a streak over several weeks.
+    🎲 Multiple Evolution Paths: Discover several evolution paths (Dragon, Unicorn, Robot...) to refresh the experience each week.
+    📊 Detailed Statistics: Track your total and weekly coding time directly in the extension's view.
+    🇫🇷 Fully in French.
 
-## ✨ Fonctionnalités
+🚀 Installation and Usage
 
-- **🐾 Compagnon Évolutif :** Ton Pote évolue à travers différents stades en fonction de ton temps de codage hebdomadaire.
-- **📈 Niveaux et XP :** Gagne de l'expérience et monte de niveau en fonction de ton temps de codage total. Ton niveau est permanent !
-- **🏆 Système de Succès :** Débloque des dizaines de succès pour tes accomplissements, qu'il s'agisse de coder la nuit ou de maintenir une régularité sur plusieurs semaines.
-- **🎲 Chemins d'Évolution Multiples :** Découvre plusieurs chemins d'évolution (Dragon, Licorne, Robot...) pour renouveler l'expérience chaque semaine.
-- **📊 Statistiques Détaillées :** Suis ton temps de codage total et hebdomadaire directement dans la vue de l'extension.
-- **🇫🇷 Entièrement en Français.**
+This extension is not on the VS Code Marketplace. Installation is done manually via a .vsix file.
 
----
+1. For Users
 
-## 🚀 Installation et Utilisation
+To install Mini Pote, follow these steps :
 
-Cette extension n'est pas sur le VS Code Marketplace. L'installation se fait manuellement via un fichier `.vsix`.
+    📦 Download the file :
+        Download the latest file that ends with .vsix (e.g., minipote-1.0.0.vsix).
 
-### **1. Pour les Utilisateurs**
+    💻 Install in VS Code :
+        Open Visual Studio Code.
+        Go to the Extensions tab in the left sidebar (the squares icon).
+        Click on the three dots (...) at the top right of the Extensions view.
+        Select "Install from VSIX...".
+        Choose the .vsix file you just downloaded.
 
-Pour installer Mini Pote, suivez ces étapes :
+    🎉 Enjoy :
+        The extension will be installed and ready to use ! Click on the new Mini Pote icon in your activity bar.
 
-1.  **📦 Télécharger le fichier :**
+2. For Developers
 
-    - Téléchargez le fichier le plus récent qui se termine par `.vsix` (par exemple `minipote-1.0.0.vsix`).
+If you have modified the code and want to create your own .vsix file:
 
-2.  **💻 Installer dans VS Code :**
+    Prerequisites: Make sure you have Node.js installed. Then, install the VS Code packaging tool (vsce) globally on your machine :
 
-    - Ouvrez Visual Studio Code.
-    - Allez dans l'onglet **Extensions** dans la barre de gauche (l'icône des carrés).
-    - Cliquez sur les trois points (`...`) en haut à droite de la vue Extensions.
-    - Sélectionnez **"Install from VSIX..."**.
-    - Choisissez le fichier `.vsix` que vous venez de télécharger.
-
-3.  **🎉 Profiter :**
-    - L'extension sera installée et prête à l'emploi ! Cliquez sur la nouvelle icône Mini Pote dans votre barre d'activité.
-
----
-
-### **2. Pour les Développeurs**
-
-Si vous avez modifié le code et que vous voulez créer votre propre fichier `.vsix` :
-
-1.  **Prérequis :** Assurez-vous d'avoir Node.js installé. Ensuite, installez l'outil de packaging de VS Code (`vsce`) globalement sur votre machine :
-
-    ```bash
     npm install -g vsce
-    ```
 
-2.  **Créer le paquet :** Ouvrez un terminal à la racine du projet et lancez la commande suivante :
+    Create the package: Open a terminal at the root of the project and run the following command :
 
-    ```bash
     vsce package
-    ```
 
-3.  **Résultat :** Cette commande va créer un fichier `minipote-x.y.z.vsix` dans le dossier du projet (où `x.y.z` est la version définie dans `package.json`). C'est ce fichier que vous pouvez partager avec vos amis !
+    Result: This command will create a minipote-x.y.z.vsix file in the project folder (where x.y.z is the version defined in package.json). This is the file you can share with your friends !
 
----
+🧠 Key Concepts
+Evolution (Weekly)
 
-## 🧠 Concepts Clés
+Your Mini Pote's appearance is based on the time you've spent coding this week. There are 6 evolution stages, from stage 0 (Egg) to stage 5 (Cosmic Form). The reset happens every Monday morning.
+The Global Level (Permanent)
 
-### L'Évolution (Hebdomadaire)
+Your global level reflects your long-term investment (1 hour of coding = 1 level). This level is never reset.
+🤝 Contributing
 
-L'apparence de ton Mini Pote est basée sur le temps que tu as passé à coder **cette semaine**. Il existe 6 stades d'évolution, du stade 0 (Œuf) au stade 5 (Forme Cosmique). Le reset a lieu chaque lundi matin.
+Contributions are welcome ! If you have ideas for improvements, feel free to open a Pull Request.
 
-### Le Niveau Global (Permanent)
+    Fork the project.
+    Create a new branch (git checkout -b feature/new-feature).
+    Commit your changes (git commit -m 'Add...').
+    Push to your branch (git push origin feature/new-feature).
+    Open a Pull Request.
 
-Ton niveau global reflète ton investissement sur le long terme (**1 heure de codage = 1 niveau**). Ce niveau n'est **jamais** réinitialisé.
+📜 License
 
----
+This project is distributed under the MIT License. See the LICENSE file for more details.
 
-## 🤝 Contribuer
-
-Les contributions sont les bienvenues ! Si tu as des idées d'améliorations, n'hésite pas à ouvrir une **Pull Request**.
-
-1.  **Fork** le projet.
-2.  Crée une nouvelle branche (`git checkout -b feature/nouvelle-fonctionnalite`).
-3.  **Commit** tes changements (`git commit -m 'Ajout de...'`).
-4.  **Push** vers ta branche (`git push origin feature/nouvelle-fonctionnalite`).
-5.  Ouvre une **Pull Request**.
-
----
-
-## 📜 Licence
-
-Ce projet est distribué sous la licence MIT. Voir le fichier `LICENSE` pour plus de détails.
-
-**Bon codage !** ❤️
+Happy coding ! ❤️
