@@ -1,20 +1,94 @@
-body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; min-height: 100vh; }
+:root {
+    --gradient-start: #667eea;
+    --gradient-end: #764ba2;
+    --text-color: white;
+    --accent-color: #ffd700;
+    --card-bg: rgba(0, 0, 0, 0.2);
+    --card-bg-light: rgba(255, 255, 255, 0.1);
+    --button-bg: rgba(255, 255, 255, 0.2);
+    --button-border: rgba(255, 255, 255, 0.4);
+    --status-active-bg: rgba(0, 255, 0, 0.2);
+    --exp-bar-bg: rgba(255, 255, 255, 0.2);
+    --exp-fill-start: #ffd700;
+    --exp-fill-end: #ff8c00;
+}
+
+/* --- Nord Theme --- */
+body[data-theme="nord"] {
+    --gradient-start: #4c566a;
+    --gradient-end: #2e3440;
+    --text-color: #d8dee9;
+    --accent-color: #88c0d0;
+    --card-bg: rgba(59, 66, 82, 0.4);
+    --card-bg-light: rgba(216, 222, 233, 0.1);
+    --button-bg: rgba(216, 222, 233, 0.2);
+    --button-border: rgba(216, 222, 233, 0.4);
+    --status-active-bg: rgba(163, 190, 140, 0.3);
+    --exp-bar-bg: rgba(236, 239, 244, 0.2);
+    --exp-fill-start: #81a1c1;
+    --exp-fill-end: #b48ead;
+}
+
+/* --- FIX: Forest Theme now uses proper green colors --- */
+body[data-theme="forest"] {
+    --gradient-start: #2E4626; /* Dark forest green */
+    --gradient-end: #4B6F44;   /* Lighter earthy green */
+    --text-color: #f0f0f0;
+    --accent-color: #a8e063;
+    --card-bg: rgba(0, 0, 0, 0.3);
+    --card-bg-light: rgba(255, 255, 255, 0.1);
+    --button-bg: rgba(168, 224, 99, 0.2);
+    --button-border: rgba(168, 224, 99, 0.4);
+    --status-active-bg: rgba(168, 224, 99, 0.3);
+    --exp-bar-bg: rgba(240, 240, 240, 0.2);
+    --exp-fill-start: #56ab2f;
+    --exp-fill-end: #a8e063;
+}
+
+/* --- Sakura Theme --- */
+body[data-theme="sakura"] {
+    --gradient-start: #ffc0cb;
+    --gradient-end: #ffb6c1;
+    --text-color: #4c2830;
+    --accent-color: #c71585;
+    --card-bg: rgba(255, 255, 255, 0.3);
+    --card-bg-light: rgba(255, 255, 255, 0.4);
+    --button-bg: rgba(76, 40, 48, 0.1);
+    --button-border: rgba(76, 40, 48, 0.3);
+    --status-active-bg: rgba(219, 112, 147, 0.3);
+    --exp-bar-bg: rgba(76, 40, 48, 0.1);
+    --exp-fill-start: #db7093;
+    --exp-fill-end: #c71585;
+}
+
+
+/* General Styles now using variables */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+    color: var(--text-color);
+    min-height: 100vh;
+    transition: background 0.5s ease;
+}
+
 .container { max-width: 400px; margin: 0 auto; }
-.pet-display { background: rgba(0,0,0,0.2); border-radius: 20px; padding: 20px; text-align: center; margin-bottom: 20px; backdrop-filter: blur(10px); }
+.pet-display { background: var(--card-bg); border-radius: 20px; padding: 20px; text-align: center; margin-bottom: 20px; backdrop-filter: blur(10px); }
 .pet-emoji { font-size: 80px; margin-bottom: 15px; transition: all 0.5s ease; }
 .pet-name { font-size: 24px; font-weight: bold; margin-bottom: 10px; }
-.pet-message { background: rgba(255,255,255,0.1); border-radius: 15px; padding: 15px; margin: 15px 0; font-style: italic; border-left: 4px solid #ffd700; }
+.pet-message { background: var(--card-bg-light); border-radius: 15px; padding: 15px; margin: 15px 0; font-style: italic; border-left: 4px solid var(--accent-color); }
 .stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin: 20px 0; }
-.stat-card { background: rgba(255,255,255,0.1); border-radius: 10px; padding: 15px; text-align: center; }
-.stat-value { font-size: 20px; font-weight: bold; color: #ffd700; }
+.stat-card { background: var(--card-bg-light); border-radius: 10px; padding: 15px; text-align: center; }
+.stat-value { font-size: 20px; font-weight: bold; color: var(--accent-color); }
 .exp-container { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
-.exp-bar { flex-grow: 1; background: rgba(255,255,255,0.2); border-radius: 10px; height: 10px; overflow: hidden; }
+.exp-bar { flex-grow: 1; background: var(--exp-bar-bg); border-radius: 10px; height: 10px; overflow: hidden; }
 .exp-percentage { font-size: 12px; font-weight: bold; min-width: 40px; text-align: right; }
-.exp-fill { background: linear-gradient(90deg, #ffd700, #ff8c00); height: 100%; transition: width 0.5s ease; }
-.status { display: inline-flex; align-items: center; background: rgba(0,255,0,0.2); padding: 5px 15px; border-radius: 20px; font-size: 14px; }
-.status.inactive { background: rgba(255,255,255,0.2); }
-.evolution-info, .achievements-section { background: rgba(255,255,255,0.1); border-radius: 10px; padding: 15px; margin-top: 20px; }
-.achievement { display: flex; align-items: center; background: rgba(255,215,0,0.2); border-radius: 8px; padding: 10px; margin: 8px 0; border-left: 4px solid #ffd700; }
+.exp-fill { background: linear-gradient(90deg, var(--exp-fill-start), var(--exp-fill-end)); height: 100%; transition: width 0.5s ease; }
+.status { display: inline-flex; align-items: center; background: var(--status-active-bg); padding: 5px 15px; border-radius: 20px; font-size: 14px; }
+.status.inactive { background: var(--card-bg); }
+.evolution-info, .achievements-section, .settings-section { background: var(--card-bg-light); border-radius: 10px; padding: 15px; margin-top: 20px; }
+.achievement { display: flex; align-items: center; background: rgba(var(--accent-color-rgb, 255, 215, 0), 0.2); border-radius: 8px; padding: 10px; margin: 8px 0; border-left: 4px solid var(--accent-color); }
 .achievement-emoji { font-size: 24px; margin-right: 10px; }
 .achievement-info { flex: 1; }
 .achievement-name { font-weight: bold; font-size: 14px; }
@@ -23,7 +97,43 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; 
 .pending-achievement { display: flex; align-items: center; background: rgba(255,255,255,0.05); border-radius: 8px; padding: 8px; margin: 5px 0; opacity: 0.6; }
 .weekly-reset-info { background: rgba(138, 43, 226, 0.2); border-radius: 10px; padding: 10px; margin: 10px 0; font-size: 12px; text-align: center; border: 1px solid rgba(138, 43, 226, 0.4); }
 .achievements-summary { display: flex; justify-content: space-between; align-items: center; padding: 10px; }
-.summary-button { background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); border-radius: 5px; padding: 5px 10px; cursor: pointer; transition: background 0.2s; }
+.summary-button { background: var(--button-bg); color: var(--text-color); border: 1px solid var(--button-border); border-radius: 5px; padding: 5px 10px; cursor: pointer; transition: background 0.2s; }
 .summary-button:hover { background: rgba(255,255,255,0.3); }
+
+.change-path-button {
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px;
+    background: var(--button-bg);
+    color: var(--text-color);
+    border: 1px solid var(--button-border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+.change-path-button:hover { background: rgba(255, 255, 255, 0.3); }
+
+/* --- Settings Styles --- */
+.settings-section h3 { margin-top: 0; }
+.theme-selector-wrapper { display: flex; align-items: center; gap: 10px; }
+#themeSelector {
+    flex-grow: 1;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid var(--button-border);
+    background: var(--button-bg);
+    color: var(--text-color);
+    cursor: pointer;
+}
+#themeSelector:focus { outline: 1px solid var(--accent-color); }
+
+/* --- FIX: Make dropdown options text visible on light backgrounds --- */
+#themeSelector option {
+    color: black;
+    background: white; /* Ensures a consistent background for the options list */
+}
+
 @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
 .pet-emoji.excited { animation: bounce 2s infinite; }

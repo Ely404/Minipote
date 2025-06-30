@@ -20,7 +20,7 @@ A virtual code companion for VS Code that evolves based on the time you spend co
 
 ### 🚀 Installation and Usage
 
-This extension is not on the VS Code Marketplace. Installation is done manually via a .vsix file.
+This extension is not on the VS Code Marketplace. `Installation is done manually via a .vsix file`.
 
 ## 1. For Users
 
@@ -28,7 +28,7 @@ To install Mini Pote, follow these steps :
 
 ### 📦 Download the file :
 
-Download the latest file that ends with .vsix (e.g., minipote-1.0.0.vsix).
+Download the latest file that ends with .vsix `(e.g., minipote-1.0.0.vsix)`.
 
 ### 💻 Install in VS Code :
 
@@ -38,7 +38,7 @@ Go to the Extensions tab in the left sidebar (the squares icon).
 
 Click on the three dots (...) at the top right of the Extensions view.
 
-Select "Install from VSIX...".
+Select `"Install from VSIX..."`.
 
 Choose the .vsix file you just downloaded.
 

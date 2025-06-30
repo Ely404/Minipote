@@ -1,13 +1,21 @@
-// webview/main.js
 (function () {
+    // Acquire the special API to communicate with the VS Code extension
     const vscode = acquireVsCodeApi();
 
     // --- STATE ---
-    let codingTime = 0, globalLevel = 1, isActive = false, unlockedAchievements = [];
+    // These variables hold the current state of the pet, received from the extension backend.
+    let totalTime = 0;
+    let weeklyTime = 0;
+    let globalLevel = 1;
+    let isActive = false;
+    let unlockedAchievements = [];
+    let selectedPath = 0;
     let pathTimes = {};
-    let lastKnownWeeklyTime = 0;
+    let currentTheme = 'default';
 
     // --- CONSTANTS ---
+    // This data is required by the user interface to display names, emojis, and descriptions.
+
     const animalPaths = [
         // Path 0: Dragon
         [
@@ -101,7 +109,7 @@
         { id: "early_bird", name: "Lève-tôt", description: "Coder entre 6h et 8h du matin", emoji: "🐦" },
         { id: "night_owl", name: "Oiseau de Nuit", description: "Coder entre 22h et 6h du matin", emoji: "🦉" },
         { id: "weekend_warrior", name: "Guerrier du Weekend", description: "Coder un Samedi ou un Dimanche", emoji: "🛡️" },
-        { id: "versatile_coder", name: "Codeur Polyvalent", description: 'Débloquer "Lève-tôt" et "Oiseau de Nuit"', emoji: "🌗" } 
+        { id: "versatile_coder", name: "Codeur Polyvalent", description: 'Débloquer "Lève-tôt" et "Oiseau de Nuit"', emoji: "🌗" }
     ];
 
     const messages = [
@@ -123,24 +131,33 @@
     ];
 
     // --- DOM ELEMENTS ---
+    // A centralized object to hold references to all the HTML elements we will manipulate.
     const dom = {
-        petEmoji: document.getElementById('petEmoji'), petName: document.getElementById('petName'), petMessage: document.getElementById('petMessage'),
-        globalLevel: document.getElementById('globalLevel'), weeklyTime: document.getElementById('weeklyTime'), totalTime: document.getElementById('totalTime'),
-        expFill: document.getElementById('expFill'), expPercentage: document.getElementById('expPercentage'), currentPath: document.getElementById('currentPath'),
-        nextEvolutionInfo: document.getElementById('nextEvolutionInfo'), status: document.getElementById('status'),
-        achievements: { summary: document.getElementById('achievementsSummary'), summaryText: document.getElementById('summaryText'), list: document.getElementById('achievementsList'), pendingList: document.getElementById('pendingAchievements'), showAllBtn: document.getElementById('showAllBtn') }
+        petEmoji: document.getElementById('petEmoji'),
+        petName: document.getElementById('petName'),
+        petMessage: document.getElementById('petMessage'),
+        globalLevel: document.getElementById('globalLevel'),
+        weeklyTime: document.getElementById('weeklyTime'),
+        totalTime: document.getElementById('totalTime'),
+        expFill: document.getElementById('expFill'),
+        expPercentage: document.getElementById('expPercentage'),
+        currentPath: document.getElementById('currentPath'),
+        nextEvolutionInfo: document.getElementById('nextEvolutionInfo'),
+        status: document.getElementById('status'),
+        achievements: {
+            summary: document.getElementById('achievementsSummary'),
+            summaryText: document.getElementById('summaryText'),
+            list: document.getElementById('achievementsList'),
+            pendingList: document.getElementById('pendingAchievements'),
+            showAllBtn: document.getElementById('showAllBtn')
+        },
+        changePathBtn: document.getElementById('changePathBtn'),
+        themeSelector: document.getElementById('themeSelector')
     };
 
-    // --- INITIALIZATION ---
-    let selectedPath = parseInt(localStorage.getItem('minipote-path') || Math.floor(Math.random() * animalPaths.length));
-    if (selectedPath >= animalPaths.length) selectedPath = 0;
-    
-    pathTimes = JSON.parse(localStorage.getItem('minipote-path-times')) || {};
-    lastKnownWeeklyTime = JSON.parse(localStorage.getItem('minipote-last-weekly-time')) || 0;
-
-    let currentAnimalPath = animalPaths[selectedPath];
-
     // --- UI UPDATE FUNCTIONS ---
+
+    // Main function to orchestrate all UI updates.
     function updateDisplay() {
         updatePetEvolution();
         updateStats();
@@ -148,17 +165,24 @@
         updateAchievements();
     }
 
+    // Updates the pet's emoji, name, and evolution progress.
     function updatePetEvolution() {
+        const currentAnimalPath = animalPaths[selectedPath];
+        if (!currentAnimalPath) return; // Safeguard against invalid data
+
         const timeForThisPath = pathTimes[selectedPath] || 0;
+
         let currentAnimal = currentAnimalPath[0];
         for (const animal of currentAnimalPath) {
             if (timeForThisPath >= animal.minTime) {
                 currentAnimal = animal;
+            } else {
+                break; // No need to check further
             }
         }
         dom.petEmoji.textContent = currentAnimal.emoji;
         dom.petName.textContent = currentAnimal.name;
-        
+
         const pathNames = ['Dragon 🐲', 'Licorne 🦄', 'Robot 🤖', 'Océan 🌊', 'Espace 🛸', 'Mystique 🧚', 'Jungle 🌳', 'Glace ❄️'];
         dom.currentPath.textContent = pathNames[selectedPath] || 'Mystère 🎭';
 
@@ -166,28 +190,29 @@
         if (currentIndex < currentAnimalPath.length - 1) {
             const nextAnimal = currentAnimalPath[currentIndex + 1];
             const timeToNext = Math.ceil(nextAnimal.minTime - timeForThisPath);
-            if (timeToNext > 0) {
-                dom.nextEvolutionInfo.textContent = `Nouvelle évolution (${nextAnimal.name}) dans : ${timeToNext} min`;
-                dom.nextEvolutionInfo.style.display = 'block';
-            } else {
-                dom.nextEvolutionInfo.style.display = 'none';
-            }
+            dom.nextEvolutionInfo.textContent = `Nouvelle évolution (${nextAnimal.name}) dans : ${formatTime(timeToNext)}`;
+            dom.nextEvolutionInfo.style.display = 'block';
         } else {
             dom.nextEvolutionInfo.textContent = '✨ Évolution maximale atteinte pour ce chemin !';
             dom.nextEvolutionInfo.style.display = 'block';
         }
     }
 
+    // Updates the level, time stats, and XP bar.
     function updateStats() {
         dom.globalLevel.textContent = globalLevel;
-        dom.weeklyTime.textContent = formatTime(lastKnownWeeklyTime);
-        dom.totalTime.textContent = formatTime(codingTime);
+        dom.weeklyTime.textContent = formatTime(weeklyTime);
+        dom.totalTime.textContent = formatTime(totalTime);
 
-        const expPercentage = (codingTime % 60) * (100 / 60);
+        const expRequiredForNextLevel = 60;
+        const currentLevelProgress = totalTime % expRequiredForNextLevel;
+        const expPercentage = (currentLevelProgress / expRequiredForNextLevel) * 100;
+
         dom.expFill.style.width = expPercentage + '%';
         dom.expPercentage.textContent = Math.floor(expPercentage) + '%';
     }
 
+    // Toggles the pet's status between "coding" and "paused".
     function updateStatus() {
         if (isActive) {
             dom.status.textContent = '🔥 En train de coder !';
@@ -200,20 +225,26 @@
         }
     }
 
+    // Renders the lists of unlocked and pending achievements.
     function updateAchievements() {
         const unlockedCount = unlockedAchievements.length;
         const { summary, list, pendingList, summaryText } = dom.achievements;
         list.innerHTML = '';
         pendingList.innerHTML = '';
+
         if (unlockedCount === 0) {
             summary.style.display = 'none';
             list.innerHTML = `<div style="opacity: 0.6; text-align: center; padding: 20px;">Commence à coder pour débloquer des trophées !</div>`;
         } else {
-            unlockedAchievements.slice().sort((a, b) => achievementsList.findIndex(ac => ac.id === a) - achievementsList.findIndex(ac => ac.id === b)).forEach(id => {
-                const ach = achievementsList.find(a => a.id === id);
-                if (ach) list.appendChild(createAchievementElement(ach, false));
+            const unlockedAchievementData = unlockedAchievements
+                .map(id => achievementsList.find(ach => ach.id === id))
+                .filter(Boolean);
+
+            unlockedAchievementData.forEach(ach => {
+                list.appendChild(createAchievementElement(ach, false));
             });
         }
+
         if (unlockedCount > 4) {
             summary.style.display = 'flex';
             summaryText.textContent = `🏆 Tu as débloqué ${unlockedCount} succès !`;
@@ -222,6 +253,7 @@
             summary.style.display = 'none';
             list.style.display = 'block';
         }
+
         achievementsList.forEach(ach => {
             if (!unlockedAchievements.includes(ach.id)) {
                 pendingList.appendChild(createAchievementElement(ach, true));
@@ -229,6 +261,7 @@
         });
     }
 
+    // Helper to create an HTML element for a single achievement.
     function createAchievementElement(ach, isPending) {
         const el = document.createElement('div');
         el.className = isPending ? 'pending-achievement' : 'achievement';
@@ -236,6 +269,7 @@
         return el;
     }
 
+    // Helper to format minutes into a "Xh Ymin" string.
     function formatTime(minutes) {
         minutes = Math.floor(minutes);
         if (minutes < 60) return minutes + 'min';
@@ -245,67 +279,61 @@
     }
 
     // --- EVENT LISTENERS ---
+
+    // Primary listener to receive all state updates from the extension backend.
     window.addEventListener('message', event => {
         const message = event.data;
-        if (message.command === 'updateTime') {
-            ({ time: codingTime, globalLevel, isActive, achievements: unlockedAchievements } = message);
-            const newTotalWeeklyTime = message.weeklyTime;
+        if (message.command === 'updateState') {
+            // Overwrite all local state variables with the authoritative data from the backend.
+            totalTime = message.totalTime;
+            weeklyTime = message.weeklyTime;
+            globalLevel = message.globalLevel;
+            isActive = message.isActive;
+            unlockedAchievements = message.achievements;
+            selectedPath = message.selectedPath;
+            pathTimes = message.pathTimes;
 
-            // Check for weekly reset first
-            if (newTotalWeeklyTime < lastKnownWeeklyTime) {
-                pathTimes = {};
-                lastKnownWeeklyTime = 0;
+            // Handle theme update
+            if (message.theme && message.theme !== currentTheme) {
+                currentTheme = message.theme;
+                document.body.dataset.theme = currentTheme;
             }
+            dom.themeSelector.value = currentTheme;
 
-            // Calculate time gained since the last update
-            const timeGained = newTotalWeeklyTime - lastKnownWeeklyTime;
-
-            // Add the gained time to the currently active path
-            if (timeGained > 0) {
-                pathTimes[selectedPath] = (pathTimes[selectedPath] || 0) + timeGained;
-            }
-
-            // Update the 'last known' total to the new total
-            lastKnownWeeklyTime = newTotalWeeklyTime;
-
-            // Save the state to localStorage
-            localStorage.setItem('minipote-path-times', JSON.stringify(pathTimes));
-            localStorage.setItem('minipote-last-weekly-time', JSON.stringify(lastKnownWeeklyTime));
-
+            // Re-render the entire UI with the new, correct state.
             updateDisplay();
         }
     });
 
+    // Listener for the "Show All" achievements button.
     dom.achievements.showAllBtn.addEventListener('click', () => {
         dom.achievements.summary.style.display = 'none';
         dom.achievements.list.style.display = 'block';
     });
 
-    let petClickCount = 0;
-    dom.petEmoji.addEventListener('click', () => {
-        petClickCount++;
-        setTimeout(() => {
-            if (petClickCount === 3) {
-                let newPath;
-                do { newPath = Math.floor(Math.random() * animalPaths.length); } while (newPath === selectedPath);
-                
-                selectedPath = newPath;
-                currentAnimalPath = animalPaths[selectedPath];
-                localStorage.setItem('minipote-path', selectedPath.toString());
-                
-                dom.petMessage.textContent = "J'ai découvert un nouveau chemin évolutif !";
-                updateDisplay();
-            }
-            petClickCount = 0;
-        }, 500);
+    // Listener for the "Change Path" button.
+    dom.changePathBtn.addEventListener('click', () => {
+        dom.petMessage.textContent = "Voyons quel autre chemin existe...";
+        vscode.postMessage({ command: 'changePath' });
+    });
+
+    // Listener for the theme selector dropdown.
+    dom.themeSelector.addEventListener('change', () => {
+        const newTheme = dom.themeSelector.value;
+        currentTheme = newTheme;
+        document.body.dataset.theme = newTheme; // Apply theme instantly for good UX.
+        vscode.postMessage({ command: 'changeTheme', theme: newTheme }); // Tell the backend to save it.
     });
 
     // --- INTERVALS & INITIALIZATION ---
+
+    // Displays a random encouraging message every 2 minutes if the user is active.
     setInterval(() => {
         if (isActive && Math.random() < 0.3) {
             dom.petMessage.textContent = messages[Math.floor(Math.random() * messages.length)];
         }
     }, 120000);
 
+    // Initial request to get the current state from the backend when the webview first loads.
     vscode.postMessage({ command: 'getCodingTime' });
 }());

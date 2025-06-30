@@ -1,9 +1,6 @@
 const vscode = require('vscode');
 const path = require('path');
 const fs = require('fs');
-const achievementManager = require('./achievementManager');
-const { PET_MESSAGES } = require('./constants');
-
 
 class PetViewProvider {
     static viewType = 'minipote.petView';
@@ -28,40 +25,56 @@ class PetViewProvider {
         webviewView.webview.html = this._getWebviewContent(webviewView.webview);
 
         webviewView.webview.onDidReceiveMessage(message => {
+            if (!this._stateManager) return;
+
             switch (message.command) {
                 case 'getCodingTime':
-                    // On initial load, send all the current data
-                    if (this._stateManager) {
-                       this.updateView(
-                           this._stateManager._totalCodingTime, 
-                           this._stateManager._weeklyTime, 
-                           this._stateManager._isActive, 
-                           this._stateManager._globalLevel
-                        );
-                    }
+                    this.updateView();
                     break;
                 case 'resetTime':
-                    // Delegate reset logic to the state manager
-                    if (this._stateManager) {
-                        this._stateManager.resetAllData();
+                    this._stateManager.resetAllData();
+                    break;
+                case 'changePath':
+                    this._stateManager.changePath();
+                    break;
+                // --- NEW: Handle theme change command from webview ---
+                case 'changeTheme':
+                    if (message.theme) {
+                        this._stateManager.setTheme(message.theme);
                     }
                     break;
             }
         });
     }
 
-    updateView(totalTime, weeklyTime, isActive, globalLevel) {
-        if (this._view) {
-            const unlockedAchievements = this._context.globalState.get('minipote.achievements', []);
-            this._view.webview.postMessage({
-                command: 'updateTime',
-                time: totalTime,
-                weeklyTime: weeklyTime,
-                globalLevel: globalLevel,
-                isActive: isActive,
-                achievements: unlockedAchievements
-            });
+    updateView() {
+        if (!this._view || !this._stateManager) {
+            return;
         }
+
+        let liveTotalTime = this._stateManager._totalCodingTime;
+        let liveWeeklyTime = this._stateManager._weeklyTime;
+
+        if (this._stateManager._isActive && this._stateManager._codingStartTime) {
+            const sessionTimeSeconds = (Date.now() - this._stateManager._codingStartTime) / 1000;
+            liveWeeklyTime += (sessionTimeSeconds / 60);
+            liveTotalTime += (sessionTimeSeconds / 60);
+        }
+        
+        const unlockedAchievements = this._context.globalState.get('minipote.achievements', []);
+
+        // --- UPDATED: Add theme to the message payload ---
+        this._view.webview.postMessage({
+            command: 'updateState',
+            totalTime: liveTotalTime,
+            weeklyTime: liveWeeklyTime,
+            globalLevel: this._stateManager._globalLevel,
+            isActive: this._stateManager._isActive,
+            achievements: unlockedAchievements,
+            selectedPath: this._stateManager._selectedPath,
+            pathTimes: this._stateManager._pathTimes,
+            theme: this._stateManager._theme,
+        });
     }
     
     _getWebviewContent(webview) {
@@ -69,10 +82,8 @@ class PetViewProvider {
         const htmlPath = path.join(webviewPath, 'main.html');
         let htmlContent = fs.readFileSync(htmlPath, 'utf-8');
 
-        // Function to generate webview-safe URIs
         const toUri = (filePath) => webview.asWebviewUri(vscode.Uri.file(path.join(webviewPath, filePath)));
 
-        // Replace placeholders with the correct URIs
         htmlContent = htmlContent
             .replace(/{{styleUri}}/g, toUri('main.css'))
             .replace(/{{scriptUri}}/g, toUri('main.js'));

@@ -48,7 +48,83 @@ const PET_MESSAGES = [
     "Cette semaine est excellente ! 🌟"
 ];
 
+ const animalPaths = [
+        // Path 0: Dragon
+        [
+            { emoji: "🥚", name: "Œuf de Dragon", minTime: 0 },
+            { emoji: "🦎", name: "Bébé Lézard", minTime: 15 },
+            { emoji: "🐲", name: "Jeune Dragon", minTime: 45 },
+            { emoji: "🐉", name: "Dragon Noble", minTime: 90 },
+            { emoji: "🦖", name: "Dragon Ancien", minTime: 180 },
+            { emoji: "🌌", name: "Dragon Cosmique", minTime: 300 }
+        ],
+        // Path 1: Unicorn
+        [
+            { emoji: "🥚", name: "Œuf Scintillant", minTime: 0 },
+            { emoji: "🐎", name: "Poulain Sauvage", minTime: 15 },
+            { emoji: "🦄", name: "Jeune Licorne", minTime: 45 },
+            { emoji: "💫", name: "Licorne Astrale", minTime: 90 },
+            { emoji: "💎", name: "Licorne de Cristal", minTime: 180 },
+            { emoji: "🌠", name: "Comète Vivante", minTime: 300 }
+        ],
+        // Path 2: Robot
+        [
+            { emoji: "💡", name: "Idée Brillante", minTime: 0 },
+            { emoji: "⚙️", name: "Prototype Mécanique", minTime: 15 },
+            { emoji: "🤖", name: "Robot Assembleur", minTime: 45 },
+            { emoji: "🦾", name: "Cyborg Intégré", minTime: 90 },
+            { emoji: "🧠", name: "Intelligence Artificielle", minTime: 180 },
+            { emoji: "🌐", name: "Conscience Globale", minTime: 300 }
+        ],
+        // Path 3: Ocean
+        [
+            { emoji: "🐚", name: "Coquillage Ancien", minTime: 0 },
+            { emoji: "🐠", name: "Poisson Agile", minTime: 15 },
+            { emoji: "🐙", name: "Pieuvre Stratège", minTime: 45 },
+            { emoji: "🦈", name: "Grand Requin Blanc", minTime: 90 },
+            { emoji: "🐋", name: "Baleine Colossale", minTime: 180 },
+            { emoji: "🔱", name: "Gardien des Océans", minTime: 300 }
+        ],
+        // Path 4: Space
+        [
+            { emoji: "☄️", name: "Comète Errante", minTime: 0 },
+            { emoji: "🛰️", name: "Sonde d'Exploration", minTime: 15 },
+            { emoji: "🧑‍🚀", name: "Pilote Stellaire", minTime: 45 },
+            { emoji: "🚀", name: "Capitaine de Fusée", minTime: 90 },
+            { emoji: "🛸", name: "Commandant de Flotte", minTime: 180 },
+            { emoji: "🌌", name: "Maître de la Galaxie", minTime: 300 }
+        ],
+        // Path 5: Mystic
+        [
+            { emoji: "🌱", name: "Graine Enchantée", minTime: 0 },
+            { emoji: "✨", name: "Feu Follet", minTime: 15 },
+            { emoji: "🧚", name: "Fée des Bois", minTime: 45 },
+            { emoji: "🧙", name: "Sorcier Élémentaire", minTime: 90 },
+            { emoji: "🧞", name: "Génie Puissant", minTime: 180 },
+            { emoji: "🌀", name: "Esprit du Vortex", minTime: 300 }
+        ],
+        // Path 6: Jungle
+        [
+            { emoji: "🐾", name: "Traces Mystérieuses", minTime: 0 },
+            { emoji: "🐈", name: "Chaton Furtif", minTime: 15 },
+            { emoji: "🐆", name: "Léopard Agile", minTime: 45 },
+            { emoji: "🐅", name: "Tigre Impitoyable", minTime: 90 },
+            { emoji: "🦁", name: "Lion, Roi de la Jungle", minTime: 180 },
+            { emoji: "🌳", name: "Esprit Gardien de la Forêt", minTime: 300 }
+        ],
+        // Path 7: Ice
+        [
+            { emoji: "💧", name: "Goutte d'Eau Pure", minTime: 0 },
+            { emoji: "🧊", name: "Cœur de Glace", minTime: 15 },
+            { emoji: "❄️", name: "Cristal de Givre", minTime: 45 },
+            { emoji: "👻", name: "Spectre de Froid", minTime: 90 },
+            { emoji: "🐺", name: "Loup des Neiges", minTime: 180 },
+            { emoji: "💎", name: "Golem de Diamant", minTime: 300 }
+        ]
+];
+
 module.exports = {
     ACHIEVEMENT_DEFINITIONS,
-    PET_MESSAGES
+    PET_MESSAGES,
+    animalPaths
 };

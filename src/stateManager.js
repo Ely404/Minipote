@@ -1,5 +1,6 @@
 const vscode = require('vscode');
 const achievementManager = require('./achievementManager');
+const { animalPaths } = require('./constants'); // We need the path count
 
 const INACTIVITY_TIMEOUT_MS = 300000; // 5 minutes
 const UI_UPDATE_INTERVAL_MS = 10000;   // 10 seconds
@@ -16,9 +17,11 @@ class CodingStateManager {
         this._weeklyTime = 0;      // in minutes
         this._globalLevel = 1;
         
-        this._inactivityTimer = null;
-        this._updateTimer = null;
-        this._saveTimer = null;
+        this._selectedPath = 0;
+        this._pathTimes = {};
+        
+        // --- NEW: Add theme state ---
+        this._theme = 'default';
     }
 
     initialize() {
@@ -32,6 +35,11 @@ class CodingStateManager {
         this._totalCodingTime = this._context.globalState.get('minipote.totalTime', 0);
         this._weeklyTime = this._context.globalState.get('minipote.weeklyTime', 0);
         this._globalLevel = this._context.globalState.get('minipote.globalLevel', 1);
+        this._selectedPath = this._context.globalState.get('minipote.selectedPath', 0);
+        this._pathTimes = this._context.globalState.get('minipote.pathTimes', {});
+        
+        // --- NEW: Load theme from persistent storage ---
+        this._theme = this._context.globalState.get('minipote.theme', 'default');
     }
     
     onActivity() {
@@ -43,21 +51,19 @@ class CodingStateManager {
         if (!this._isActive) {
             this._isActive = true;
             this._codingStartTime = Date.now();
-            this._provider.updateView(this._totalCodingTime, this._weeklyTime, true, this._globalLevel);
+            this._provider.updateView();
         }
     }
 
     _stopCoding() {
         if (this._isActive) {
             this._isActive = false;
-            // On stop, we save any remaining fraction of a minute from the session.
             this._commitSessionTimeToState();
             
-            // The check for session achievements can still be useful for short sessions
             const finalSessionDuration = Math.floor((Date.now() - (this._codingStartTime || Date.now())) / 60000);
             achievementManager.checkSessionAchievements(finalSessionDuration, this._context);
             
-            this._provider.updateView(this._totalCodingTime, this._weeklyTime, false, this._globalLevel);
+            this._provider.updateView();
         }
     }
 
@@ -66,10 +72,6 @@ class CodingStateManager {
         this._inactivityTimer = setTimeout(() => this._stopCoding(), INACTIVITY_TIMEOUT_MS);
     }
 
-    /**
-     * Commits the current session's elapsed time to the state variables and saves to disk.
-     * This is the core of the fix.
-     */
     _commitSessionTimeToState() {
         if (!this._isActive || !this._codingStartTime) {
             return;
@@ -78,38 +80,29 @@ class CodingStateManager {
         const sessionDurationMinutes = Math.floor((Date.now() - this._codingStartTime) / 60000);
 
         if (sessionDurationMinutes > 0) {
-            // Add the elapsed full minutes to our state
             this._totalCodingTime += sessionDurationMinutes;
             this._weeklyTime += sessionDurationMinutes;
-
-            // Persist the new totals to disk immediately
+            
+            this._pathTimes[this._selectedPath] = (this._pathTimes[this._selectedPath] || 0) + sessionDurationMinutes;
+            
             this._context.globalState.update("minipote.totalTime", this._totalCodingTime);
             this._context.globalState.update("minipote.weeklyTime", this._weeklyTime);
+            this._context.globalState.update("minipote.pathTimes", this._pathTimes);
 
-            // IMPORTANT: Reset the start time to now, so we don't double-count these minutes later.
-            // We keep the milliseconds for the next calculation.
             this._codingStartTime += sessionDurationMinutes * 60000;
         }
     }
 
     _startTimers() {
         this._updateTimer = setInterval(() => {
-            if (this._isActive) {
-                const sessionTimeSeconds = (Date.now() - this._codingStartTime) / 1000;
-                const liveWeeklyTime = this._weeklyTime + (sessionTimeSeconds / 60);
-                const liveTotalTime = this._totalCodingTime + (sessionTimeSeconds / 60);
-                this._provider.updateView(liveTotalTime, liveWeeklyTime, true, this._globalLevel);
-            }
+            this._provider.updateView();
         }, UI_UPDATE_INTERVAL_MS);
 
-        // This timer is now the primary SAVE mechanism.
         this._saveTimer = setInterval(() => {
-            // If active, commit the last minute of work to the state and save it.
-            if (this._isActive) {
+             if (this._isActive) {
                 this._commitSessionTimeToState();
             }
-
-            // The level-up and achievement checks can now use the reliably saved values.
+            
             const newGlobalLevel = Math.floor(this._totalCodingTime / 60) + 1;
             if (newGlobalLevel > this._globalLevel) {
                 this._globalLevel = newGlobalLevel;
@@ -138,30 +131,60 @@ class CodingStateManager {
             }
             let consecutiveWeeks = this._context.globalState.get("minipote.consecutiveWeeks", 0);
             consecutiveWeeks = lastWeekTime >= 300 ? consecutiveWeeks + 1 : 0;
-            this._context.globalState.update("minipote.consecutiveWeeks", consecutiveWeeks);
-            this._context.globalState.update("minipote.lastWeekTime", lastWeekTime);
+            
+            this._pathTimes = {};
+            this._context.globalState.update("minipote.pathTimes", {});
+            
             this._weeklyTime = 0;
             this._context.globalState.update("minipote.weeklyTime", 0);
+            this._context.globalState.update("minipote.consecutiveWeeks", consecutiveWeeks);
+            this._context.globalState.update("minipote.lastWeekTime", lastWeekTime);
             this._context.globalState.update("minipote.lastReset", new Date().getTime());
         }
+    }
+    
+    changePath() {
+        let newPath;
+        do {
+            newPath = Math.floor(Math.random() * animalPaths.length);
+        } while (newPath === this._selectedPath);
+        
+        this._selectedPath = newPath;
+        this._context.globalState.update('minipote.selectedPath', this._selectedPath);
+        this._provider.updateView();
+    }
+    
+    // --- NEW: Method to set and save the theme ---
+    setTheme(themeName) {
+        this._theme = themeName;
+        this._context.globalState.update('minipote.theme', this._theme);
+        this._provider.updateView();
     }
     
     resetAllData() {
         this._stopCoding();
         this._totalCodingTime = 0; this._weeklyTime = 0; this._globalLevel = 1; this._isActive = false;
+        this._selectedPath = 0; this._pathTimes = {};
+        
+        // --- NEW: Reset theme to default ---
+        this._theme = 'default';
+
         this._context.globalState.update('minipote.totalTime', 0);
         this._context.globalState.update('minipote.weeklyTime', 0);
         this._context.globalState.update('minipote.globalLevel', 1);
         this._context.globalState.update('minipote.consecutiveWeeks', 0);
         this._context.globalState.update('minipote.achievements', []);
-        this._provider.updateView(0, 0, false, 1);
+        this._context.globalState.update('minipote.selectedPath', 0);
+        this._context.globalState.update('minipote.pathTimes', {});
+        this._context.globalState.update('minipote.theme', 'default');
+        
+        this._provider.updateView();
     }
 
     dispose() {
         clearTimeout(this._inactivityTimer);
         clearInterval(this._updateTimer);
         clearInterval(this._saveTimer);
-        // This final call to _stopCoding will save any leftover seconds from the last minute.
         this._stopCoding();
     }
 }
