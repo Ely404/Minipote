@@ -1,4 +1,3 @@
-<!-- webview/main.html -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -14,20 +13,25 @@
             <div id="petName" class="pet-name">Mini Pote</div>
             <div id="petMessage" class="pet-message">Salut ! Je suis ton nouveau compagnon de code ! 🎉</div>
             <div class="stats">
+                <!-- NEW: Card for Daily Time -->
                 <div class="stat-card">
-                    <div>Niveau Global</div>
-                    <div id="globalLevel" class="stat-value">1</div>
+                    <div>Aujourd'hui</div>
+                    <div id="dailyTime" class="stat-value">0min</div>
                 </div>
                 <div class="stat-card">
                     <div>Cette Semaine</div>
                     <div id="weeklyTime" class="stat-value">0min</div>
                 </div>
                 <div class="stat-card">
+                    <div>Niveau Global</div>
+                    <div id="globalLevel" class="stat-value">1</div>
+                </div>
+                <div class="stat-card">
                     <div>Total</div>
                     <div id="totalTime" class="stat-value">0min</div>
                 </div>
             </div>
-            <div class="weekly-reset-info">⏰ Reset chaque lundi. Le niveau global est conservé !</div>
+            <div class="weekly-reset-info">⏰ Reset quotidien & hebdomadaire. Le niveau global est conservé !</div>
             <div class="exp-container">
                 <div class="exp-bar">
                     <div id="expFill" class="exp-fill" style="width: 0%;"></div>
@@ -41,8 +45,7 @@
             <h3>🎯 Ton chemin évolutif :</h3>
             <div id="pathName" style="font-weight: bold; margin-bottom: 10px;">🎲 Chemin : <span id="currentPath"></span></div>
             <div id="nextEvolutionInfo" style="margin-top: 10px; font-weight: 500;"></div>
-            <!-- NEW: A proper button to change path -->
-            <button id="changePathBtn" class="change-path-button">Changer de chemin 🎲</button>
+            <button id="changePathBtn" class="action-button">Changer de chemin 🎲</button>
         </div>
 
         <div class="achievements-section">
@@ -56,16 +59,19 @@
             <div id="pendingAchievements" class="achievements-list"></div>
         </div>
         
-        <!-- NEW: Settings Section with Theme Selector -->
         <div class="settings-section">
             <h3>🎨 Paramètres</h3>
             <div class="theme-selector-wrapper">
                 <label for="themeSelector">Thème :</label>
+                <!-- UPDATED: Added new themes -->
                 <select id="themeSelector">
                     <option value="default">Défaut (Violet)</option>
                     <option value="nord">Nord (Sombre)</option>
                     <option value="forest">Forêt (Vert)</option>
                     <option value="sakura">Sakura (Rose)</option>
+                    <option value="pastel-blue">Pastel (Bleu)</option>
+                    <option value="solarized-dark">Solarized (Sombre)</option>
+                    <option value="synthwave">Synthwave (Néon)</option>
                 </select>
             </div>
         </div>

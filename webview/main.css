@@ -29,10 +29,10 @@ body[data-theme="nord"] {
     --exp-fill-end: #b48ead;
 }
 
-/* --- FIX: Forest Theme now uses proper green colors --- */
+/* --- Forest Theme --- */
 body[data-theme="forest"] {
-    --gradient-start: #2E4626; /* Dark forest green */
-    --gradient-end: #4B6F44;   /* Lighter earthy green */
+    --gradient-start: #2E4626;
+    --gradient-end: #4B6F44;
     --text-color: #f0f0f0;
     --accent-color: #a8e063;
     --card-bg: rgba(0, 0, 0, 0.3);
@@ -61,26 +61,79 @@ body[data-theme="sakura"] {
     --exp-fill-end: #c71585;
 }
 
+/* --- NEW: Pastel Blue Theme --- */
+body[data-theme="pastel-blue"] {
+    --gradient-start: #a1c4fd;
+    --gradient-end: #c2e9fb;
+    --text-color: #2c3e50;
+    --accent-color: #8e44ad;
+    --card-bg: rgba(255, 255, 255, 0.4);
+    --card-bg-light: rgba(255, 255, 255, 0.3);
+    --button-bg: rgba(44, 62, 80, 0.1);
+    --button-border: rgba(44, 62, 80, 0.2);
+    --status-active-bg: rgba(46, 204, 113, 0.3);
+    --exp-bar-bg: rgba(44, 62, 80, 0.1);
+    --exp-fill-start: #2980b9;
+    --exp-fill-end: #3498db;
+}
+
+/* --- NEW: Solarized Dark Theme --- */
+body[data-theme="solarized-dark"] {
+    --gradient-start: #073642;
+    --gradient-end: #002b36;
+    --text-color: #93a1a1;
+    --accent-color: #268bd2;
+    --card-bg: rgba(0, 0, 0, 0.25);
+    --card-bg-light: rgba(255, 255, 255, 0.05);
+    --button-bg: rgba(147, 161, 161, 0.1);
+    --button-border: rgba(147, 161, 161, 0.2);
+    --status-active-bg: rgba(133, 153, 0, 0.2); /* green */
+    --exp-bar-bg: rgba(255, 255, 255, 0.07);
+    --exp-fill-start: #b58900; /* yellow */
+    --exp-fill-end: #cb4b16; /* orange */
+}
+
+/* --- NEW: Synthwave Theme --- */
+body[data-theme="synthwave"] {
+    --gradient-start: #231131;
+    --gradient-end: #170c2a;
+    --text-color: #ffffff;
+    --accent-color: #00e8f5;
+    --card-bg: rgba(255, 45, 219, 0.1);
+    --card-bg-light: rgba(255, 255, 255, 0.05);
+    --button-bg: rgba(0, 232, 245, 0.15);
+    --button-border: rgba(0, 232, 245, 0.4);
+    --status-active-bg: rgba(255, 45, 219, 0.3);
+    --exp-bar-bg: rgba(0, 0, 0, 0.4);
+    --exp-fill-start: #ff2ddb;
+    --exp-fill-end: #00e8f5;
+}
+
 
 /* General Styles now using variables */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
-    padding: 20px;
+    padding: 15px;
     background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
     color: var(--text-color);
     min-height: 100vh;
     transition: background 0.5s ease;
+    box-sizing: border-box;
 }
 
-.container { max-width: 400px; margin: 0 auto; }
-.pet-display { background: var(--card-bg); border-radius: 20px; padding: 20px; text-align: center; margin-bottom: 20px; backdrop-filter: blur(10px); }
-.pet-emoji { font-size: 80px; margin-bottom: 15px; transition: all 0.5s ease; }
-.pet-name { font-size: 24px; font-weight: bold; margin-bottom: 10px; }
-.pet-message { background: var(--card-bg-light); border-radius: 15px; padding: 15px; margin: 15px 0; font-style: italic; border-left: 4px solid var(--accent-color); }
-.stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin: 20px 0; }
-.stat-card { background: var(--card-bg-light); border-radius: 10px; padding: 15px; text-align: center; }
-.stat-value { font-size: 20px; font-weight: bold; color: var(--accent-color); }
+/* MODIFIED: Removed max-width for responsiveness */
+.container { margin: 0 auto; }
+.pet-display { background: var(--card-bg); border-radius: 15px; padding: 20px; text-align: center; margin-bottom: 20px; backdrop-filter: blur(10px); }
+.pet-emoji { font-size: 72px; margin-bottom: 10px; transition: all 0.5s ease; }
+.pet-name { font-size: 22px; font-weight: bold; margin-bottom: 10px; }
+.pet-message { background: var(--card-bg-light); border-radius: 12px; padding: 15px; margin: 15px 0; font-style: italic; border-left: 4px solid var(--accent-color); }
+
+/* MODIFIED: Responsive stats grid */
+.stats { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0; }
+.stat-card { flex: 1 1 100px; background: var(--card-bg-light); border-radius: 10px; padding: 12px; text-align: center; font-size: 13px; }
+.stat-value { font-size: 18px; font-weight: bold; color: var(--accent-color); margin-top: 4px; }
+
 .exp-container { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
 .exp-bar { flex-grow: 1; background: var(--exp-bar-bg); border-radius: 10px; height: 10px; overflow: hidden; }
 .exp-percentage { font-size: 12px; font-weight: bold; min-width: 40px; text-align: right; }
@@ -95,12 +148,13 @@ body {
 .achievement-desc { font-size: 12px; opacity: 0.8; }
 .achievements-list { max-height: 350px; overflow-y: auto; margin-top: 10px; }
 .pending-achievement { display: flex; align-items: center; background: rgba(255,255,255,0.05); border-radius: 8px; padding: 8px; margin: 5px 0; opacity: 0.6; }
-.weekly-reset-info { background: rgba(138, 43, 226, 0.2); border-radius: 10px; padding: 10px; margin: 10px 0; font-size: 12px; text-align: center; border: 1px solid rgba(138, 43, 226, 0.4); }
+.weekly-reset-info { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 10px; margin: 15px 0; font-size: 12px; text-align: center; }
 .achievements-summary { display: flex; justify-content: space-between; align-items: center; padding: 10px; }
 .summary-button { background: var(--button-bg); color: var(--text-color); border: 1px solid var(--button-border); border-radius: 5px; padding: 5px 10px; cursor: pointer; transition: background 0.2s; }
 .summary-button:hover { background: rgba(255,255,255,0.3); }
 
-.change-path-button {
+/* MODIFIED: Renamed button class for clarity */
+.action-button {
     width: 100%;
     margin-top: 15px;
     padding: 10px;
@@ -113,7 +167,7 @@ body {
     font-weight: bold;
     transition: background 0.2s;
 }
-.change-path-button:hover { background: rgba(255, 255, 255, 0.3); }
+.action-button:hover { background: rgba(255, 255, 255, 0.3); }
 
 /* --- Settings Styles --- */
 .settings-section h3 { margin-top: 0; }
@@ -128,12 +182,19 @@ body {
     cursor: pointer;
 }
 #themeSelector:focus { outline: 1px solid var(--accent-color); }
-
-/* --- FIX: Make dropdown options text visible on light backgrounds --- */
 #themeSelector option {
     color: black;
-    background: white; /* Ensures a consistent background for the options list */
+    background: white;
 }
 
 @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
 .pet-emoji.excited { animation: bounce 2s infinite; }
+
+/* NEW: Media query for very narrow views */
+@media (max-width: 280px) {
+    body { padding: 10px; }
+    .pet-emoji { font-size: 56px; }
+    .pet-name { font-size: 20px; }
+    .stat-card { flex-basis: calc(50% - 10px); font-size: 12px; } /* 2 cards per row */
+    .stat-value { font-size: 16px; }
+}

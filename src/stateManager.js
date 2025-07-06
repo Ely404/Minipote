@@ -1,6 +1,6 @@
 const vscode = require('vscode');
 const achievementManager = require('./achievementManager');
-const { animalPaths } = require('./constants'); // We need the path count
+const { animalPaths } = require('./constants');
 
 const INACTIVITY_TIMEOUT_MS = 300000; // 5 minutes
 const UI_UPDATE_INTERVAL_MS = 10000;   // 10 seconds
@@ -20,12 +20,16 @@ class CodingStateManager {
         this._selectedPath = 0;
         this._pathTimes = {};
         
-        // --- NEW: Add theme state ---
         this._theme = 'default';
+
+        // --- NEW: Add daily time state ---
+        this._dailyTime = 0; // in minutes
+        this._lastDailyReset = 0; // timestamp
     }
 
     initialize() {
         this._loadState();
+        this._checkDailyReset(); // Check for daily reset first
         this._checkWeeklyReset();
         this._startTimers();
         this._provider.setStateManager(this);
@@ -37,12 +41,15 @@ class CodingStateManager {
         this._globalLevel = this._context.globalState.get('minipote.globalLevel', 1);
         this._selectedPath = this._context.globalState.get('minipote.selectedPath', 0);
         this._pathTimes = this._context.globalState.get('minipote.pathTimes', {});
-        
-        // --- NEW: Load theme from persistent storage ---
         this._theme = this._context.globalState.get('minipote.theme', 'default');
+        
+        // --- NEW: Load daily time from persistent storage ---
+        this._dailyTime = this._context.globalState.get('minipote.dailyTime', 0);
+        this._lastDailyReset = this._context.globalState.get('minipote.lastDailyReset', 0);
     }
     
     onActivity() {
+        this._checkDailyReset(); // Also check on activity in case VS Code was open overnight
         this._startCoding();
         this._resetInactivityTimer();
     }
@@ -82,11 +89,13 @@ class CodingStateManager {
         if (sessionDurationMinutes > 0) {
             this._totalCodingTime += sessionDurationMinutes;
             this._weeklyTime += sessionDurationMinutes;
+            this._dailyTime += sessionDurationMinutes; // --- NEW: Increment daily time ---
             
             this._pathTimes[this._selectedPath] = (this._pathTimes[this._selectedPath] || 0) + sessionDurationMinutes;
             
             this._context.globalState.update("minipote.totalTime", this._totalCodingTime);
             this._context.globalState.update("minipote.weeklyTime", this._weeklyTime);
+            this._context.globalState.update("minipote.dailyTime", this._dailyTime); // --- NEW: Save daily time ---
             this._context.globalState.update("minipote.pathTimes", this._pathTimes);
 
             this._codingStartTime += sessionDurationMinutes * 60000;
@@ -100,19 +109,37 @@ class CodingStateManager {
 
         this._saveTimer = setInterval(() => {
              if (this._isActive) {
-                this._commitSessionTimeToState();
+                 this._commitSessionTimeToState();
             }
             
             const newGlobalLevel = Math.floor(this._totalCodingTime / 60) + 1;
             if (newGlobalLevel > this._globalLevel) {
-                this._globalLevel = newGlobalLevel;
-                this._context.globalState.update('minipote.globalLevel', this._globalLevel);
+                 this._globalLevel = newGlobalLevel;
+                 this._context.globalState.update('minipote.globalLevel', this._globalLevel);
             }
             achievementManager.checkAchievements(this._context, this._totalCodingTime, this._weeklyTime, this._globalLevel);
         }, SAVE_INTERVAL_MS);
     }
+    
+    // --- NEW: Method to check if daily stats should be reset ---
+    _checkDailyReset() {
+        const now = new Date();
+        const lastReset = new Date(this._lastDailyReset);
+        
+        // Compare YYYY-MM-DD strings to see if it's a new day
+        const todayStr = now.toISOString().slice(0, 10);
+        const lastResetStr = lastReset.toISOString().slice(0, 10);
+
+        if (todayStr !== lastResetStr) {
+            this._dailyTime = 0;
+            this._lastDailyReset = now.getTime();
+            this._context.globalState.update("minipote.dailyTime", 0);
+            this._context.globalState.update("minipote.lastDailyReset", this._lastDailyReset);
+        }
+    }
 
     _checkWeeklyReset() {
+        // (This function remains unchanged)
         const lastResetTimestamp = this._context.globalState.get("minipote.lastReset", 0);
         const now = new Date();
         const lastResetDate = new Date(lastResetTimestamp);
@@ -154,7 +181,6 @@ class CodingStateManager {
         this._provider.updateView();
     }
     
-    // --- NEW: Method to set and save the theme ---
     setTheme(themeName) {
         this._theme = themeName;
         this._context.globalState.update('minipote.theme', this._theme);
@@ -165,12 +191,12 @@ class CodingStateManager {
         this._stopCoding();
         this._totalCodingTime = 0; this._weeklyTime = 0; this._globalLevel = 1; this._isActive = false;
         this._selectedPath = 0; this._pathTimes = {};
-        
-        // --- NEW: Reset theme to default ---
         this._theme = 'default';
+        this._dailyTime = 0; // --- NEW: Reset daily time ---
 
         this._context.globalState.update('minipote.totalTime', 0);
         this._context.globalState.update('minipote.weeklyTime', 0);
+        this._context.globalState.update('minipote.dailyTime', 0); // --- NEW: Reset daily time in storage ---
         this._context.globalState.update('minipote.globalLevel', 1);
         this._context.globalState.update('minipote.consecutiveWeeks', 0);
         this._context.globalState.update('minipote.achievements', []);

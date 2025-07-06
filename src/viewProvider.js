@@ -37,7 +37,6 @@ class PetViewProvider {
                 case 'changePath':
                     this._stateManager.changePath();
                     break;
-                // --- NEW: Handle theme change command from webview ---
                 case 'changeTheme':
                     if (message.theme) {
                         this._stateManager.setTheme(message.theme);
@@ -54,20 +53,24 @@ class PetViewProvider {
 
         let liveTotalTime = this._stateManager._totalCodingTime;
         let liveWeeklyTime = this._stateManager._weeklyTime;
+        let liveDailyTime = this._stateManager._dailyTime; // --- NEW ---
 
         if (this._stateManager._isActive && this._stateManager._codingStartTime) {
             const sessionTimeSeconds = (Date.now() - this._stateManager._codingStartTime) / 1000;
-            liveWeeklyTime += (sessionTimeSeconds / 60);
-            liveTotalTime += (sessionTimeSeconds / 60);
+            const sessionTimeMinutes = sessionTimeSeconds / 60;
+            liveWeeklyTime += sessionTimeMinutes;
+            liveTotalTime += sessionTimeMinutes;
+            liveDailyTime += sessionTimeMinutes; // --- NEW ---
         }
         
         const unlockedAchievements = this._context.globalState.get('minipote.achievements', []);
 
-        // --- UPDATED: Add theme to the message payload ---
+        // --- UPDATED: Add dailyTime to the message payload ---
         this._view.webview.postMessage({
             command: 'updateState',
             totalTime: liveTotalTime,
             weeklyTime: liveWeeklyTime,
+            dailyTime: liveDailyTime, // --- NEW ---
             globalLevel: this._stateManager._globalLevel,
             isActive: this._stateManager._isActive,
             achievements: unlockedAchievements,

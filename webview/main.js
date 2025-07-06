@@ -6,6 +6,7 @@
     // These variables hold the current state of the pet, received from the extension backend.
     let totalTime = 0;
     let weeklyTime = 0;
+    let dailyTime = 0; // --- NEW: Tracks time coded today ---
     let globalLevel = 1;
     let isActive = false;
     let unlockedAchievements = [];
@@ -138,6 +139,7 @@
         petMessage: document.getElementById('petMessage'),
         globalLevel: document.getElementById('globalLevel'),
         weeklyTime: document.getElementById('weeklyTime'),
+        dailyTime: document.getElementById('dailyTime'), // --- NEW: Reference to the daily time element ---
         totalTime: document.getElementById('totalTime'),
         expFill: document.getElementById('expFill'),
         expPercentage: document.getElementById('expPercentage'),
@@ -198,10 +200,11 @@
         }
     }
 
-    // Updates the level, time stats, and XP bar.
+    // UPDATED: Updates the level, time stats (including daily), and XP bar.
     function updateStats() {
         dom.globalLevel.textContent = globalLevel;
         dom.weeklyTime.textContent = formatTime(weeklyTime);
+        dom.dailyTime.textContent = formatTime(dailyTime); // --- NEW: Update the daily time display ---
         dom.totalTime.textContent = formatTime(totalTime);
 
         const expRequiredForNextLevel = 60;
@@ -280,13 +283,14 @@
 
     // --- EVENT LISTENERS ---
 
-    // Primary listener to receive all state updates from the extension backend.
+    // UPDATED: Primary listener now handles the new 'dailyTime' state.
     window.addEventListener('message', event => {
         const message = event.data;
         if (message.command === 'updateState') {
             // Overwrite all local state variables with the authoritative data from the backend.
             totalTime = message.totalTime;
             weeklyTime = message.weeklyTime;
+            dailyTime = message.dailyTime; // --- NEW: Receive daily time from backend ---
             globalLevel = message.globalLevel;
             isActive = message.isActive;
             unlockedAchievements = message.achievements;
